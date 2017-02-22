@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="generator" content="PSPad editor, www.pspad.com">
+  <title>Validátor formulí</title>
+  </head>
+  <body>
+        <input type="text" id="input_formula" />   
+        <div id="table"></div>
+        <script type="text/javascript" src="Formula.js"></script>
+        <script type="text/javascript" src="FormulaSymbol.js"></script>
+        
+        <script type="text/javascript">
+            var input = document.getElementById("input_formula");
+            input.addEventListener("keypress", function(e) {
+                parse(this.value);
+            });
+            function parse(txt) {
+                var formula = new FormulaSymbol.Formula().parse(txt);
+                console.log(formula);
+                console.log(formula.evaluate({a:true, b:true, c:true}));
+                
+                var tablediv = document.getElementById("table");
+                tablediv.innerHTML = "";
+                var table = document.createElement("table");
+                //headers
+                var headers = [];
+                headers.push.apply(headers, formula.variables);
+                headers.push("RESULT");
+                table.appendChild(rowFromValues(headers));
+                tablediv.appendChild(table);
+                // values
+                // values array also contains the result at the last index
+                const vars = formula.variables;
+                const values = vars.map(()=>{return true});
+                const result_index = values.length;
+                // variable object passed to the formula
+                const varValues = {};
+                vars.forEach((name)=>{varValues[name]=false;});
+                
+                values.push(false);
+                for(var i=0, l=Math.pow(2, vars.length); i<l;++i) {
+                    // alter values
+                    for(var val_index = 0; val_index<result_index; val_index++) {
+                        values[val_index] = !values[val_index];
+                        // save new value in the var info object
+                        varValues[vars[val_index]] = values[val_index];
+                        // allow to proceed only when value overflows from true to false
+                        if(values[val_index]==true)
+                            break;
+                    }
+                    // now evaluate formula
+                    values[result_index] = formula.evaluate(varValues);
+                    // and print hte output
+                    table.appendChild(rowFromValues(values));
+                }
+            }
+            function rowFromValues(vals) {
+                var row = document.createElement("tr");
+                for(var i=0, l=vals.length; i<l; ++i) {
+                    var td = document.createElement("td");
+                    td.appendChild(new Text(vals[i]));
+                    row.appendChild(td);
+                }
+                return row;
+            }
+        </script>
+  </body>
+</html>
