@@ -58,7 +58,7 @@ FormulaSymbol.implementations = [];
         constructor() {
             super();
             this.symbols = ["NOT", "!", "¬"];
-            this.symbolsBefore = [Negation, BinaryOperator]
+            this.symbolsAfter = [Negation, Variable, Formula];
             this.name = "negation";
             this.prevRole = FormulaSymbol.ROLE_PARENT;
             this.nextRole = FormulaSymbol.ROLE_CHILD;
@@ -78,6 +78,7 @@ FormulaSymbol.implementations = [];
             }
             this.name = "logic variable";
             
+            this.symbolsAfter = [BinaryOperator];
             this.symbol = FormulaExpression.Variable;
             this.prevRole = FormulaSymbol.ROLE_PARENT;
             this.nextRole = FormulaSymbol.ROLE_PARENT;
@@ -130,6 +131,11 @@ FormulaSymbol.implementations = [];
             // number of characters since the start of the string
             // used for error reporting
             var chars = 0;
+            const originalString = str;
+            // remove any trailing whitespace
+            while(str.endsWith(" ")) {
+                str = str.substr(0, str.length-1);
+            }
             // remove any enclosing brackets
             while(str.startsWith("(") && str.endsWith(")")) {
                 str = str.substr(1, str.length-2);
@@ -150,6 +156,7 @@ FormulaSymbol.implementations = [];
                 // clear leading whitespace
                 while(str[0]==" " || str[0]=="\t") {
                     str = str.substr(1);
+                    chars++;
                 }
                 if(str.length==0)
                     break;
@@ -162,16 +169,21 @@ FormulaSymbol.implementations = [];
                     }
                 }
                 if(matchingSymbols.length>1) {
-                    throw new Error("Ambiguous syntax!");
+                    throw new FormulaError("Ambiguous syntax!", chars, originalString);
                 }
                 else if(matchingSymbols.length==0) {
-                    throw new Error("Unknown expression at ");
+                    throw new FormulaError("Unknown expression or symbol!", chars, originalString);
                 }
                 else {
                     previousObject = currentObject;
                     previousSymbol = currentSymbol;
                     currentSymbol = matchingSymbols[0].symbol;
-                    currentObject = matchingSymbols[0].symbol.parse(str.substr(0,matchingSymbols[0].count));
+                    try {
+                        currentObject = matchingSymbols[0].symbol.parse(str.substr(0,matchingSymbols[0].count));
+                    }
+                    catch(e) {
+                        throw new FormulaError(e.message.length!=0?e.message:"Unknown error!", chars, originalString);
+                    }
                     // this is little stinky
                     // remembers what variable names were used
                     if(currentObject instanceof FormulaExpression.Variable) {
@@ -185,6 +197,22 @@ FormulaSymbol.implementations = [];
                                 variableNames.push(name);
                         });
                     }
+                    // verify if this symbol is expected at this place
+                    if(previousSymbol != null) {
+                        var expectedSymbol = previousSymbol.symbolsAfter.find((ctor)=> {
+                            return currentSymbol instanceof ctor;
+                        });
+                        if(!expectedSymbol) {
+                            throw new FormulaError("Unexpected "+currentSymbol.name+" expecting "+previousSymbol.symbolsAfter.map((ctor)=>{
+                                var entry = new ctor();
+                                if(entry.symbols && entry.symbols.length>0) 
+                                    return entry.name + " ("+entry.symbols.join(", ")+")";
+                                else
+                                    return entry.name;
+                            }).join(", "), chars, originalString);
+                        }
+                    }
+
                     
                     if(previousObject!=null) {
                         if(currentSymbol.prevRole == FormulaSymbol.ROLE_CHILD) {
@@ -194,9 +222,9 @@ FormulaSymbol.implementations = [];
                         }
                         else if(currentSymbol.prevRole == FormulaSymbol.ROLE_PARENT) {
                             if(parentStack.length == 0)
-                                throw new Error("Unexpected child node!");
+                                throw new FormulaError("Unexpected child node!", chars, originalString);
                             parentStack[0].addChild(currentObject);
-                            parentStack.splice(1);
+                            parentStack.splice(0, 1);
                             //if(currentSymbol.nextRole == FormulaSymbol.ROLE_CHILD) {
                             //    t
                             //}    
@@ -214,9 +242,16 @@ FormulaSymbol.implementations = [];
                         console.log("New parent on stack: "+currentObject.constructor.name);
                     }
                     str = str.substr(matchingSymbols[0].count);
+                    chars += matchingSymbols[0].count;
                     console.log("TOP: ", topObject);
                 }
             }
+            if(parentStack.length!=0) {
+                throw new FormulaError("Missing right-hand operand for "+parentStack[0].constructor.name, chars, originalString);
+            }
+            if(currentObject == null)
+                throw new Error("Formula is empty!");
+            
             var result = new FormulaExpression.Formula(currentObject.topParent());
             variableNames.sort();
             result.variables = variableNames;
@@ -229,6 +264,8 @@ FormulaSymbol.implementations = [];
             super();           
             this.prevRole = FormulaSymbol.ROLE_CHILD;
             this.nextRole = FormulaSymbol.ROLE_CHILD;
+            this.symbolsAfter = [Negation, Variable, Formula];
+            this.name = "binary operator";
         }
     }
     

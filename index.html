@@ -4,10 +4,15 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="generator" content="PSPad editor, www.pspad.com">
   <title>Validátor formulí</title>
+  <style>
+  .wrong {color: red}
+  </style>
   </head>
   <body>
-        <input type="text" id="input_formula" />   
+        <input type="text" id="input_formula" />  
+        <div id="error"></div> 
         <div id="table"></div>
+        <script type="text/javascript" src="FormulaError.js"></script>
         <script type="text/javascript" src="Formula.js"></script>
         <script type="text/javascript" src="FormulaSymbol.js"></script>
         
@@ -16,13 +21,40 @@
             input.addEventListener("keypress", function(e) {
                 parse(this.value);
             });
+            input.addEventListener("keyup", function(e) {
+                parse(this.value);
+            });
             function parse(txt) {
-                var formula = new FormulaSymbol.Formula().parse(txt);
-                console.log(formula);
-                console.log(formula.evaluate({a:true, b:true, c:true}));
-                
                 var tablediv = document.getElementById("table");
                 tablediv.innerHTML = "";
+                var errdiv = document.getElementById("error");
+                errdiv.innerHTML = "";
+                var formula = null;
+                try {
+                    formula = new FormulaSymbol.Formula().parse(txt);
+                }
+                catch(e) {
+                    errdiv.appendChild(new Text(e.message));
+                    if(e instanceof FormulaError) {
+                        errdiv.appendChild(document.createElement("br"));
+                        var code = document.createElement("code");
+                        var correct = e.str.substr(0, e.index);
+                        code.className = "correct";
+                        code.appendChild(new Text(correct));
+                        errdiv.appendChild(code);
+                        
+                        code = document.createElement("code");
+                        var wrong = e.str.substr(e.index);
+                        code.className = "wrong";
+                        code.appendChild(new Text(wrong));
+                        errdiv.appendChild(code);
+                    }
+                    throw e;
+                }
+                console.log(formula);
+               
+                
+
                 var table = document.createElement("table");
                 //headers
                 var headers = [];
