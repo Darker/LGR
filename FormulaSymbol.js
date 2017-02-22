@@ -194,7 +194,11 @@ FormulaSymbol.implementations = [];
                         currentObject.symbol = matchingSymbols[0].symbol;
                     }
                     catch(e) {
-                        throw new FormulaError(e.message.length!=0?e.message:"Unknown error!", chars, originalString);
+                        var absolute_chars = chars;
+                        if(e instanceof FormulaError) {
+                            absolute_chars += e.index;
+                        }
+                        throw new FormulaError(e.message.length!=0?e.message:"Unknown error!", absolute_chars, originalString);
                     }
                     // this is little stinky
                     // remembers what variable names were used
