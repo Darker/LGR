@@ -24,7 +24,7 @@
   </style>
   </head>
   <body>
-        <input type="text" id="input_formula" />  
+        <div>φ = <input type="text" id="input_formula" /></div>  
         <form name="controls">
           <fieldset>
             <input type="checkbox" id="ch_truth_first" /><label for="ch_truth_first">Truth first in truth table</label><br /> 
@@ -47,6 +47,8 @@
             document.getElementById("ch_truth_first").addEventListener("change",
                 function() {parse(input.value);}
             );
+            if(input.value!="")
+                parse(input.value);
             function parse(txt) {
                 var tablediv = document.getElementById("table");
                 tablediv.innerHTML = "";
