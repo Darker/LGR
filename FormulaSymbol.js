@@ -283,15 +283,18 @@ FormulaSymbol.implementations = [];
             var brackets = 0;
             if(str.length<2)
                 return false;
+            var foundBracket = false;
             for(var i=0,l=str.length; i<l;++i) {
                 if(i>0 && brackets==0)
                     return false;
-                if(str[i]=="(")
+                if(str[i]=="(") {
                     brackets++;
+                    foundBracket = true;
+                }
                 if(str[i]==")")
                     brackets--;
             }
-            return brackets == 0;
+            return brackets == 0 && foundBracket;
         }
     }
     registerChild(Formula);
