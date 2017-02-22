@@ -86,7 +86,7 @@
                 headers.push.apply(headers, formula.variables);
                 headers.push("RESULT");
                 table.appendChild(rowFromValues(headers));
-                tablediv.appendChild(table);
+                
                 // values
                 // values array also contains the result at the last index
                 const vars = formula.variables;
@@ -116,6 +116,8 @@
                     else 
                         table.appendChild(rowFromValues(values));
                 }
+                tablediv.appendChild(table);
+                tablediv.appendChild(new Text("Depth: "+formula.depth()));
             }
             function rowFromValues(vals) {
                 var row = document.createElement("tr");

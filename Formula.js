@@ -13,6 +13,9 @@ class FormulaExpression {
         }
         return node;
     }
+    depth() {
+        return 0;
+    }
 }
 class Formula extends FormulaExpression {
     constructor(child) {
@@ -32,6 +35,9 @@ class Formula extends FormulaExpression {
         else {
             throw new Error("Too many children added to "+this.constructor.name);
         }
+    }
+    depth() {
+        return this.child.depth();
     }
 }
 FormulaExpression.Formula = Formula;
@@ -67,10 +73,17 @@ class BinaryOperator extends FormulaExpression {
             throw new Error("Too many children added to "+this.constructor.name);
         }
     }
+    depth() {
+        return Math.max.apply(null, this.children.map((child)=>{return child.depth();})) + 1;
+    }
 } 
 class Negation extends Formula {
     evaluate(variables) {
         return !(this.child.evaluate(variables));
+    }
+    // unlike normal formula, negation counts as depth level
+    depth() {
+        return this.child.depth()+1;
     }
 }
 FormulaExpression.Negation = Negation;

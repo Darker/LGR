@@ -281,6 +281,8 @@ FormulaSymbol.implementations = [];
         }
         static hasEnclosingBrackets(str) {
             var brackets = 0;
+            if(str.length<2)
+                return false;
             for(var i=0,l=str.length; i<l;++i) {
                 if(i>0 && brackets==0)
                     return false;
