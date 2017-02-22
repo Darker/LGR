@@ -140,9 +140,17 @@ FormulaSymbol.implementations = [];
                 str = str.substr(0, str.length-1);
             }
             // remove any enclosing brackets
-            while(str.startsWith("(") && str.endsWith(")")) {
+            while(Formula.hasEnclosingBrackets(str)) {
                 str = str.substr(1, str.length-2);
                 chars++;
+                // clear leading whitespace
+                while(str[0]==" " || str[0]=="\t") {
+                    str = str.substr(1);
+                    chars++;
+                }
+                while(str.endsWith(" ")) {
+                    str = str.substr(0, str.length-1);
+                }
             }
             // This is to be assigned as an either child or parent to the new objects
             var previousObject = null;
@@ -266,6 +274,18 @@ FormulaSymbol.implementations = [];
                 else
                     return entry.name;
             }).join(", "), chars, originalString);
+        }
+        static hasEnclosingBrackets(str) {
+            var brackets = 0;
+            for(var i=0,l=str.length; i<l;++i) {
+                if(i>0 && brackets==0)
+                    return false;
+                if(str[i]=="(")
+                    brackets++;
+                if(str[i]==")")
+                    brackets--;
+            }
+            return brackets == 0;
         }
     }
     registerChild(Formula);

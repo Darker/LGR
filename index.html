@@ -25,6 +25,11 @@
   </head>
   <body>
         <input type="text" id="input_formula" />  
+        <form name="controls">
+          <fieldset>
+            <input type="checkbox" id="ch_truth_first" /><label for="ch_truth_first">Truth first in truth table</label><br /> 
+          </fieldset>
+        </form>
         <div id="error"></div> 
         <div id="table"></div>
         <script type="text/javascript" src="FormulaError.js"></script>
@@ -39,6 +44,9 @@
             input.addEventListener("keyup", function(e) {
                 parse(this.value);
             });
+            document.getElementById("ch_truth_first").addEventListener("change",
+                function() {parse(input.value);}
+            );
             function parse(txt) {
                 var tablediv = document.getElementById("table");
                 tablediv.innerHTML = "";
@@ -99,8 +107,12 @@
                     }
                     // now evaluate formula
                     values[result_index] = formula.evaluate(varValues);
-                    // and print hte output
-                    table.appendChild(rowFromValues(values));
+                    // and print the output
+                    if(document.getElementById("ch_truth_first").checked && i>0) {
+                        table.insertBefore(rowFromValues(values), table.rows[1]);
+                    }
+                    else 
+                        table.appendChild(rowFromValues(values));
                 }
             }
             function rowFromValues(vals) {
