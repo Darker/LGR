@@ -6,6 +6,8 @@ class FormulaSymbol {
         // lists of class objects of symbols that precede and follow this symbol
         this.symbolsBefore = [];
         this.symbolsAfter = [];
+        // symbols mentioned here cannot be child symbols for this symbol
+        this.illegalChild = [];
         this.symbol = function() {throw new Error("No symbol class assigned to syntax symbol "+this.name);};
         // Role of previous and next expression in the tree
         this.prevRole = FormulaSymbol.ROLE_CHILD;
@@ -38,9 +40,10 @@ class FormulaSymbol {
         return new this.symbol(str);
     }
     
-    static allImplementations() {
-        
-    
+    static isLegalChildOf(parent, child) {
+        return !parent.illegalChild.find((ctor) => {
+            return child instanceof ctor;        
+        });    
     }
 }
 FormulaSymbol.ROLE_PARENT = {};
@@ -180,6 +183,7 @@ FormulaSymbol.implementations = [];
                     currentSymbol = matchingSymbols[0].symbol;
                     try {
                         currentObject = matchingSymbols[0].symbol.parse(str.substr(0,matchingSymbols[0].count));
+                        currentObject.symbol = matchingSymbols[0].symbol;
                     }
                     catch(e) {
                         throw new FormulaError(e.message.length!=0?e.message:"Unknown error!", chars, originalString);
@@ -203,13 +207,7 @@ FormulaSymbol.implementations = [];
                             return currentSymbol instanceof ctor;
                         });
                         if(!expectedSymbol) {
-                            throw new FormulaError("Unexpected "+currentSymbol.name+" expecting "+previousSymbol.symbolsAfter.map((ctor)=>{
-                                var entry = new ctor();
-                                if(entry.symbols && entry.symbols.length>0) 
-                                    return entry.name + " ("+entry.symbols.join(", ")+")";
-                                else
-                                    return entry.name;
-                            }).join(", "), chars, originalString);
+                            this.expectedSymbolError(currentSymbol, previousSymbol.symbolsAfter, chars, originalString); 
                         }
                     }
 
@@ -218,6 +216,9 @@ FormulaSymbol.implementations = [];
                         if(currentSymbol.prevRole == FormulaSymbol.ROLE_CHILD) {
                             var topParent = previousObject.topParent();
                             currentObject.addChild(topParent);
+                            if(!FormulaSymbol.isLegalChildOf(topParent.symbol, currentObject.symbol)) {
+                                throw new FormulaError(currentObject.symbol.name+" cannot be direct sibling of "+topParent.symbol.name, chars, originalString);
+                            }
                             console.log("Adding "+topParent.constructor.name+" to "+currentObject.constructor.name);
                         }
                         else if(currentSymbol.prevRole == FormulaSymbol.ROLE_PARENT) {
@@ -257,6 +258,15 @@ FormulaSymbol.implementations = [];
             result.variables = variableNames;
             return result;
         }
+        expectedSymbolError(found, expected, chars, originalString) {
+            throw new FormulaError("Unexpected "+found.name+" expecting "+expected.map((ctor)=>{
+                var entry = new ctor();
+                if(entry.symbols && entry.symbols.length>0) 
+                    return entry.name + " ("+entry.symbols.join(", ")+")";
+                else
+                    return entry.name;
+            }).join(", "), chars, originalString);
+        }
     }
     registerChild(Formula);
     class BinaryOperator extends FormulaSymbol {
@@ -265,6 +275,7 @@ FormulaSymbol.implementations = [];
             this.prevRole = FormulaSymbol.ROLE_CHILD;
             this.nextRole = FormulaSymbol.ROLE_CHILD;
             this.symbolsAfter = [Negation, Variable, Formula];
+            this.illegalChild = [BinaryOperator];
             this.name = "binary operator";
         }
     }
@@ -274,6 +285,7 @@ FormulaSymbol.implementations = [];
             super();
             this.symbol = FormulaExpression.Disjunction;
             this.symbols = ["OR", "||", "∨"];
+            this.illegalChild = [Conjunction, Equivalence, Implication];
             this.name = "dinsjunction";
         }
     }
@@ -283,6 +295,7 @@ FormulaSymbol.implementations = [];
             super();
             this.symbol = FormulaExpression.Conjunction;
             this.symbols = ["AND", "&&", "∧"];
+            this.illegalChild = [Disjunction, Equivalence, Implication];
             this.name = "conjunction";
         }
     }

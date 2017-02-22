@@ -6,6 +6,21 @@
   <title>Validátor formulí</title>
   <style>
   .wrong {color: red}
+  #input_formula {
+     width: 80%;
+     font-size: 14pt;
+     margin: 0px;
+  }
+  td {
+      margin: 0px;
+      padding: 0.5em;
+  }
+  td.true {
+      background-color: #55FF55;
+  }
+  td.false {
+      background-color: #FF5555;
+  }
   </style>
   </head>
   <body>
@@ -93,6 +108,10 @@
                 for(var i=0, l=vals.length; i<l; ++i) {
                     var td = document.createElement("td");
                     td.appendChild(new Text(vals[i]));
+                    if(vals[i]===true)
+                        td.className+=" true";
+                    if(vals[i]===false)
+                        td.className+=" false"; 
                     row.appendChild(td);
                 }
                 return row;
