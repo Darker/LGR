@@ -133,4 +133,4 @@ class ExclusiveOr extends MultiOperator{
         return a != b;
     }
 }
-FormulaExpression.ExclusiveOr = Disjunction;
+FormulaExpression.ExclusiveOr = ExclusiveOr;
