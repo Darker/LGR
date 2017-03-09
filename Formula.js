@@ -141,3 +141,10 @@ class NotAnd extends MultiOperator{
     }
 }
 FormulaExpression.NotAnd = NotAnd;
+
+class NotOr extends MultiOperator{
+    evaluateTwoValues(a,b){
+        return !a && !b;
+    }
+}
+FormulaExpression.NotOr = NotOr;

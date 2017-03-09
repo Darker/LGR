@@ -136,7 +136,7 @@ FormulaSymbol.implementations = [];
 
         parse(str) {
             var allSymbols = [Negation, Variable, Formula, Conjunction, Disjunction,
-                Equivalence, Implication, ExclusiveOr, NotAnd];
+                Equivalence, Implication, ExclusiveOr, NotAnd, NotOr];
             for (var i = 0, l = allSymbols.length; i < l; ++i) {
                 allSymbols[i] = new allSymbols[i]();
             }
@@ -377,4 +377,14 @@ FormulaSymbol.implementations = [];
         }
     }
     registerChild(NotAnd);
+
+    class NotOr extends BinaryOperator {
+        constructor() {
+            super();
+            this.symbol = FormulaExpression.NotOr;
+            this.symbols = ["↓", "NOR"];
+            this.name = "not or"
+        }
+    }
+    registerChild(NotOr);
 })();
