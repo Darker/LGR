@@ -127,7 +127,7 @@ FormulaSymbol.implementations = [];
             return i;
         }
         parse(str) {
-            var allSymbols = [Negation, Variable, Formula, Conjunction, Disjunction, Equivalence, Implication];
+            var allSymbols = [Negation, Variable, Formula, Conjunction, Disjunction, Equivalence, Implication, ExclusiveOr];
             for(var i=0,l=allSymbols.length; i<l; ++i) {
                 allSymbols[i] = new allSymbols[i]();
             }
