@@ -134,3 +134,17 @@ class ExclusiveOr extends MultiOperator{
     }
 }
 FormulaExpression.ExclusiveOr = ExclusiveOr;
+
+class NotAnd extends MultiOperator{
+    evaluateTwoValues(a,b){
+        return !a || !b;
+    }
+}
+FormulaExpression.NotAnd = NotAnd;
+
+class NotOr extends MultiOperator{
+    evaluateTwoValues(a,b){
+        return !a && !b;
+    }
+}
+FormulaExpression.NotOr = NotOr;
