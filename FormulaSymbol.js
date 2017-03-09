@@ -88,10 +88,11 @@ FormulaSymbol.implementations = [];
         }
         matchState(str) {
             var state = FormulaSymbol.prototype.matchState.call(this, str);
-            if(state>0 && str.length>state+1) {
+            if(state>0 && str.length>state) {
                 // check if there's another letter after this variable
                 // in that case this would not match at all
-                if(str[state].match(/[a-z]/i)) {
+                const matchVariable = new RegExp("["+this.symbols.join("")+"]", "i");
+                if(str[state].match(matchVariable)) {
                     return 0;
                 }
             }
