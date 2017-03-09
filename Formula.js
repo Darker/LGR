@@ -127,3 +127,10 @@ class Disjunction extends MultiOperator {
     }
 }
 FormulaExpression.Disjunction = Disjunction;
+
+class ExclusiveOr extends MultiOperator{
+    evaluateTwoValues(a,b){
+        return a != b;
+    }
+}
+FormulaExpression.ExclusiveOr = ExclusiveOr;

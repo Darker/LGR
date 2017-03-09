@@ -127,7 +127,7 @@ FormulaSymbol.implementations = [];
             return i;
         }
         parse(str) {
-            var allSymbols = [Negation, Variable, Formula, Conjunction, Disjunction, Equivalence, Implication];
+            var allSymbols = [Negation, Variable, Formula, Conjunction, Disjunction, Equivalence, Implication, ExclusiveOr];
             for(var i=0,l=allSymbols.length; i<l; ++i) {
                 allSymbols[i] = new allSymbols[i]();
             }
@@ -346,5 +346,14 @@ FormulaSymbol.implementations = [];
             this.name = "implication";
         }
     }
-    registerChild(Disjunction);
+    registerChild(Implication);
+    class ExclusiveOr extends BinaryOperator{
+        constructor(){
+            super();
+            this.symbol = FormulaExpression.ExclusiveOr;
+            this.symbols = ["XOR"];
+            this.name = "ExclusiveOr";
+        }
+    }
+    registerChild(ExclusiveOr);
 })();
