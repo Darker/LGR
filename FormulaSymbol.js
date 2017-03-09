@@ -347,4 +347,12 @@ FormulaSymbol.implementations = [];
         }
     }
     registerChild(Disjunction);
+    class ExclusiveOr extends BinaryOperator{
+        constructor(){
+            super();
+            this.symbol = FormulaExpression.ExclusiveOr;
+            this.symbols = ["XOR"];
+            this.name = "exclusive or";
+        }
+    }
 })();
