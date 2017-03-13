@@ -34,9 +34,13 @@
         <div id="table"></div>
 
         <!-- Syntax sheet -->
-        <div>
+        <div id="syntax-sheet-container">
             <h2>Syntax sheet</h2>
-            <table class="syntax-sheet">
+            <table id="syntax-sheet">
+                <tr>
+                    <th>Operator</th>
+                    <th>Symbols</th>
+                </tr>
             </table>
         </div>
 
@@ -140,6 +144,22 @@
                 }
                 return row;
             }
+
+            // Create syntax sheet table
+            var table = document.getElementById("syntax-sheet");
+            var expressions = FormulaSymbol.implementations;
+            for(var i = 0; i < expressions.length; i++) {
+                var tmp = new expressions[i];
+                if(tmp.symbols !== undefined){
+                    var row = table.insertRow();
+                    var cell = row.insertCell();
+                    cell.innerHTML = tmp.name;
+
+                    cell = row.insertCell();
+                    cell.innerHTML = tmp.symbols.toString();
+                }
+            }
+
         </script>
   </body>
 </html>
