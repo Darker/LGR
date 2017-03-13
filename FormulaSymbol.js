@@ -362,7 +362,7 @@ FormulaSymbol.implementations = [];
         constructor() {
             super();
             this.symbol = FormulaExpression.ExclusiveOr;
-            this.symbols = ["XOR"];
+            this.symbols = ["XOR", "⊕"];
             this.name = "exclusive or";
         }
     }

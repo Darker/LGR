@@ -3,25 +3,8 @@
   <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="generator" content="PSPad editor, www.pspad.com">
+  <link href="style.css" type="text/css" rel="stylesheet">
   <title>Validátor formulí</title>
-  <style>
-  .wrong {color: red}
-  #input_formula {
-     width: 80%;
-     font-size: 14pt;
-     margin: 0px;
-  }
-  td {
-      margin: 0px;
-      padding: 0.5em;
-  }
-  td.true {
-      background-color: #55FF55;
-  }
-  td.false {
-      background-color: #FF5555;
-  }
-  </style>
   </head>
   <body>
         <div>φ = <input type="text" id="input_formula" /></div>  
@@ -38,7 +21,7 @@
             <h2>Syntax sheet</h2>
             <table id="syntax-sheet">
                 <tr>
-                    <th>Operator</th>
+                    <th>Expression</th>
                     <th>Symbols</th>
                 </tr>
             </table>
@@ -150,13 +133,15 @@
             var expressions = FormulaSymbol.implementations;
             for(var i = 0; i < expressions.length; i++) {
                 var tmp = new expressions[i];
-                if(tmp.symbols !== undefined){
+                if(tmp.symbols !== undefined && tmp.symbols.length != 0){
                     var row = table.insertRow();
+                    //name
                     var cell = row.insertCell();
                     cell.innerHTML = tmp.name;
 
+                    //symbols
                     cell = row.insertCell();
-                    cell.innerHTML = tmp.symbols.toString();
+                    cell.innerHTML = tmp.symbols.join(", ");
                 }
             }
 

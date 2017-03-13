@@ -1,0 +1,36 @@
+.wrong {
+    color: red
+}
+
+#input_formula {
+    width: 80%;
+    font-size: 14pt;
+    margin: 0px;
+}
+
+td {
+    margin: 0px;
+    padding: 0.5em;
+}
+
+td.true {
+    background-color: #55FF55;
+}
+
+td.false {
+    background-color: #FF5555;
+}
+
+#syntax-sheet tr td {
+    text-align: center;
+    border-bottom: 1px solid gray;
+}
+
+#syntax-sheet {
+    border-collapse: collapse;
+}
+
+#syntax-sheet th {
+    text-align: center;
+    border-bottom: 1px solid gray;
+}
