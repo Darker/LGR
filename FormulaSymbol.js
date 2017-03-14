@@ -54,12 +54,12 @@ FormulaSymbol.ROLE_PARENT = {};
 FormulaSymbol.ROLE_CHILD = {};
 FormulaSymbol.implementations = [];
 
-
 (()=> {
     function registerChild(child) {
         FormulaSymbol.implementations.push(child);
         FormulaSymbol[child.prototype.constructor.name] = child;
     }
+
 
     class Negation extends FormulaSymbol {
         constructor() {
@@ -362,7 +362,7 @@ FormulaSymbol.implementations = [];
         constructor() {
             super();
             this.symbol = FormulaExpression.ExclusiveOr;
-            this.symbols = ["XOR"];
+            this.symbols = ["XOR", "⊕"];
             this.name = "exclusive or";
         }
     }
